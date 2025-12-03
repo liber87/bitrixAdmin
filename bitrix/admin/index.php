@@ -5,7 +5,11 @@
 	$modx->db->connect();	
 	if (empty ($modx->config)) {
 		$modx->getSettings();
-	}	
+	}
+	if (isset($_SESSION['mgrInternalKey'])){
+		header('Location: ./../../' . MGR_DIR);
+		exit();
+	}
 	$auth = 'Авторизация';
 	$please = 'Пожалуйста, авторизуйтесь';
 	$login = 'Логин';

@@ -10,9 +10,11 @@
 	if (substr($m['version'], 0, 1) == 3){
 		$csrf = csrf_field()->toHtml();
 		$login_path = './../../' . MGR_DIR . '/?a=0';
+		$token_str = " + '&_token=' + form._token.value";
 	} else {
 		$csrf = '';
 		$login_path = './../../' . MGR_DIR . '/processors/login.processor.php';
+		$token_str = '';
 	}
 	
 	$auth = 'Авторизация';
@@ -84,7 +86,7 @@
 							}
 						}
 					};
-					xhr.send('ajax=1&username=' + encodeURIComponent(form.username.value) + '&password=' + encodeURIComponent(form.password.value) + '&rememberme=' + form.rememberme.value + '&_token=' + form._token.value);				
+					xhr.send('ajax=1&username=' + encodeURIComponent(form.username.value) + '&password=' + encodeURIComponent(form.password.value) + '&rememberme=' + form.rememberme.value<?php echo $token_str;?>);				
 					return false;
 				};
 			});

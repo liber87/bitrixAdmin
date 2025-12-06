@@ -5,11 +5,16 @@
 	$modx->db->connect();	
 	if (empty ($modx->config)) {
 		$modx->getSettings();
+	}	
+	$m = $modx->getVersionData();
+	if (substr($m['version'], 0, 1) == 3){
+		$csrf = csrf_field()->toHtml();
+		$login_path = './../../' . MGR_DIR . '/?a=0';
+	} else {
+		$csrf = '';
+		$login_path = './../../' . MGR_DIR . '/processors/login.processor.php';
 	}
-	if (isset($_SESSION['mgrInternalKey'])){
-		header('Location: ./../../' . MGR_DIR);
-		exit();
-	}
+	
 	$auth = 'Авторизация';
 	$please = 'Пожалуйста, авторизуйтесь';
 	$login = 'Логин';
@@ -61,7 +66,7 @@
 				form.onsubmit = function(e) {
 					e.preventDefault();				
 					var xhr = new XMLHttpRequest();
-					xhr.open('POST', './../../<?php echo MGR_DIR;?>/processors/login.processor.php', true);
+					xhr.open('POST', './../../<?php echo MGR_DIR;?>/?a=0', true);
 					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;');
 					xhr.onload = function() {					
 						if (this.readyState === 4) {
@@ -79,7 +84,7 @@
 							}
 						}
 					};
-					xhr.send('ajax=1&username=' + encodeURIComponent(form.username.value) + '&password=' + encodeURIComponent(form.password.value) + '&rememberme=' + form.rememberme.value);				
+					xhr.send('ajax=1&username=' + encodeURIComponent(form.username.value) + '&password=' + encodeURIComponent(form.password.value) + '&rememberme=' + form.rememberme.value + '&_token=' + form._token.value);				
 					return false;
 				};
 			});
@@ -128,7 +133,10 @@
 								<a href="https://t.me/evo_cms" class="login-footer-link" target="_blank"><?php echo $chat;?></a>			
 							</div>
 						</div>
-						<form  method="post" action="./../../<?php echo MGR_DIR;?>/processors/login.processor.php" class="bx-admin-auth-form" novalidate  name="loginfrm" id="loginfrm">			
+						<form  method="post" action="./../../<?php echo MGR_DIR;?>/?a=0" class="bx-admin-auth-form" novalidate  name="loginfrm" id="loginfrm">
+							<?php 
+								echo $csrf;
+							?>
 							<div id="auth_form_wrapper">
 								<div class="login-main-popup-wrap login-popup-wrap" id="authorize">									
 									<div class="login-popup">
@@ -165,7 +173,7 @@
 									</div>
 								</div>
 								<script type="text/javascript">
-									BX.adminLogin.registerForm(new BX.authFormAuthorize('authorize', {url:'./../../<?php echo MGR_DIR;?>/processors/login.processor.php'}));
+									BX.adminLogin.registerForm(new BX.authFormAuthorize('authorize', {url:'./../../<?php echo MGR_DIR;?>/?a=0'}));
 								</script>
 							</div>
 						</form>
@@ -199,11 +207,7 @@
 				</div>
 				<script type="text/javascript">
 					var obForgMsg = new BX.authFormForgotPasswordMessage('forgot_password_message', {url:''}),
-					obForg = new BX.authFormForgotPassword('forgot_password', {
-						url: '/bitrix/admin/?forgot_password=yes',
-						needCaptcha: true,
-						message: obForgMsg
-					});
+					obForg = new BX.authFormForgotPassword('forgot_password', {});
 					BX.adminLogin.registerForm(obForg);
 					BX.adminLogin.registerForm(obForgMsg);
 				</script>
